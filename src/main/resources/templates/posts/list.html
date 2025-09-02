@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>게시글 목록</title>
+	<style>
+		:root { --primary:#3182f6; --bg:#f7f8fa; --text:#222; --muted:#6b7280; --card:#ffffff; --border:#e5e7eb; }
+		* { box-sizing: border-box; }
+		body {
+			margin: 0; padding: 40px 16px; background: var(--bg); color: var(--text);
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', Noto Sans KR, sans-serif;
+		}
+		.container { max-width: 960px; margin: 0 auto; }
+		.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+		.title { font-size: 22px; font-weight: 700; }
+		.primary-btn {
+			display: inline-block; padding: 10px 14px; background: var(--primary); color: #fff; text-decoration: none;
+			border-radius: 10px; font-weight: 600; box-shadow: 0 2px 8px rgba(49,130,246,.25);
+		}
+		.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 0; overflow: hidden; }
+		.table { width: 100%; border-collapse: collapse; }
+		.table th, .table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+		.table th { background: #fafafa; color: #111; font-weight: 700; }
+		.table tr:hover td { background: #fafbff; }
+		.row-link { cursor: pointer; }
+		.meta { color: var(--muted); font-size: 13px; margin-top: 12px; display: flex; gap: 8px; align-items: center; }
+		.pager { display: flex; gap: 8px; margin-top: 12px; }
+		.pager a, .pager span {
+			display: inline-block; padding: 6px 10px; border: 1px solid var(--border); background: #fff; border-radius: 8px; text-decoration: none; color: var(--text);
+		}
+		.pager a:hover { border-color: var(--primary); color: var(--primary); }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<div class="title">게시글 목록</div>
+			<a class="primary-btn" th:href="@{/posts/new}">새 글</a>
+		</div>
+		<div class="card">
+			<table class="table">
+				<thead>
+				<tr>
+					<th>ID</th>
+					<th>제목</th>
+					<th>작성자</th>
+					<th>조회수</th>
+					<th>작성일</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr class="row-link" th:each="post : ${posts.content}"
+					th:onclick="|location.href='@{/posts/{id}(id=${post.id})}'|">
+					<td th:text="${post.id}">1</td>
+					<td th:text="${post.title}">title</td>
+					<td th:text="${post.author}">author</td>
+					<td th:text="${post.viewCount}">0</td>
+					<td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">date</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="meta">
+			<span>페이지</span>
+			<span th:text="${posts.number + 1}">1</span>
+			<span>/</span>
+			<span th:text="${posts.totalPages}">1</span>
+		</div>
+		<div class="pager">
+			<a th:if="${posts.hasPrevious()}" th:href="@{|/posts?page=${posts.number - 1}|}">이전</a>
+			<a th:if="${posts.hasNext()}" th:href="@{|/posts?page=${posts.number + 1}|}">다음</a>
+		</div>
+	</div>
+</body>
+</html>
