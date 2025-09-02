@@ -1,6 +1,6 @@
 package com.board.board.controller;
 
-import com.board.board.entity.Post;
+import com.board.board.dto.PostDto;
 import com.board.board.service.PostService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -22,19 +22,19 @@ public class PostController {
     
     @GetMapping
     public String list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Model model) {
-        Page<Post> posts = postService.getPosts(PageRequest.of(page, size));
+        Page<PostDto> posts = postService.getPosts(PageRequest.of(page, size));
         model.addAttribute("posts", posts);
         return "posts/list";
     }
 
     @GetMapping("/new")
     public String newFrom(Model model) {
-        model.addAttribute("post", new Post());
+        model.addAttribute("post", new PostDto());
         return "posts/form";
     }
 
     @PostMapping
-    public String create(@Valid @ModelAttribute("post") Post post, BindingResult bindingResult) {
+    public String create(@Valid @ModelAttribute("post") PostDto post, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             return "posts/form";
         }
@@ -45,24 +45,24 @@ public class PostController {
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
         postService.increaseViewCount(id);
-        Post post = postService.getPost(id);
+        PostDto post = postService.getPost(id);
         model.addAttribute("post", post);
         return "posts/view";
     }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
-        Post post = postService.getPost(id);
+        PostDto post = postService.getPost(id);
         model.addAttribute("post", post);
         return "posts/form";
     }
 
     @PostMapping("/{id}")
-    public String update(@PathVariable Long id, @Valid @ModelAttribute("post") Post post, BindingResult bindingResult) {
+    public String update(@PathVariable Long id, @Valid @ModelAttribute("post") PostDto post, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             return "posts/form";
         }
-        postService.update(id, post.getTitle(), post.getContent(), post.getAuthor());
+        postService.update(id, post);
         return "redirect:/posts/{id}";
     }
     

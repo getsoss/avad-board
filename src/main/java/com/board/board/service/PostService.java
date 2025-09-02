@@ -1,6 +1,7 @@
 package com.board.board.service;
 
 
+import com.board.board.dto.PostDto;
 import com.board.board.entity.Post;
 import com.board.board.repository.PostRepository;
 import org.springframework.data.domain.Page;
@@ -21,25 +22,29 @@ public class PostService {
     }
     
     @Transactional(readOnly = true)
-    public Page<Post> getPosts(Pageable pageable) {
-        return postRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public Page<PostDto> getPosts(Pageable pageable) {
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Post getPost(Long id) {
-        return postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("게시글이 없습니다. id=" + id));
+    public PostDto getPost(Long id) {
+        Post post = getPostEntity(id);
+        return toDto(post);
     }
 
-    public Post create(Post post) {
-        return postRepository.save(post);
+    public PostDto create(PostDto dto) {
+        Post post = toEntity(dto);
+        Post saved = postRepository.save(post);
+        return toDto(saved);
     }
 
-    public Post update(Long id, String title, String content, String author) {
-        Post post = getPost(id);
-        post.setTitle(title);
-        post.setContent(content);
-        post.setAuthor(author);
-        return post;
+    public PostDto update(Long id, PostDto dto) {
+        Post post = getPostEntity(id);
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+        post.setAuthor(dto.getAuthor());
+        return toDto(post);
     }
 
     public void delete(Long id) {
@@ -47,9 +52,33 @@ public class PostService {
     }
 
     public void increaseViewCount(Long id) {
-        Post post = getPost(id);
-        post.setViewCount(post.getViewCount() + 1
+        Post post = getPostEntity(id);
+        post.setViewCount(post.getViewCount() + 1);
+    }
+
+    private Post getPostEntity(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 없습니다. id=" + id));
+    }
+
+    private PostDto toDto(Post post) {
+        return new PostDto(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getAuthor(),
+                post.getCreatedAt(),
+                post.getUpdatedAt(),
+                post.getViewCount()
         );
+    }
+
+    private Post toEntity(PostDto dto) {
+        Post post = new Post();
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+        post.setAuthor(dto.getAuthor());
+        return post;
     }
 
 }
