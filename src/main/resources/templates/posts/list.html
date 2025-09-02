@@ -16,12 +16,21 @@
 		.primary-btn {
 			display: inline-block; padding: 10px 14px; background: var(--primary); color: #fff; text-decoration: none;
 			border-radius: 10px; font-weight: 600; box-shadow: 0 2px 8px rgba(49,130,246,.25);
+			transition: background .15s ease, box-shadow .15s ease, transform .15s ease;
 		}
+		.primary-btn:hover { background:#2b74db; box-shadow: 0 6px 16px rgba(49,130,246,.35); transform: translateY(-1px); }
+		.primary-btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(49,130,246,.25); }
 		.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 0; overflow: hidden; }
 		.table { width: 100%; border-collapse: collapse; }
 		.table th, .table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
 		.table th { background: #fafafa; color: #111; font-weight: 700; }
-		.table tr:hover td { background: #fafbff; }
+		/* 기본 행 배경과 부드러운 전환 */
+		.table tbody tr { background:#ffffff; }
+		.table tbody tr td { transition: background .12s ease; }
+		/* 새 글 버튼(primary) 색상과 동일한 톤 + 투명도 적용 */
+		.table tbody tr:hover > td { background: rgba(49,130,246,0.10) !important; }
+		.table tbody tr.row-link:hover > td { background: rgba(49,130,246,0.10) !important; }
+		.card .table tbody tr.row-link:hover > td { background: rgba(49,130,246,0.10) !important; }
 		.row-link { cursor: pointer; }
 		.meta { color: var(--muted); font-size: 13px; margin-top: 12px; display: flex; gap: 8px; align-items: center; }
 		.pager { display: flex; gap: 8px; margin-top: 12px; }
@@ -29,6 +38,12 @@
 			display: inline-block; padding: 6px 10px; border: 1px solid var(--border); background: #fff; border-radius: 8px; text-decoration: none; color: var(--text);
 		}
 		.pager a:hover { border-color: var(--primary); color: var(--primary); }
+
+		/* 보장용: tr 자체에도 배경 지정하고 td는 상속하도록 마무리 규칙 추가 */
+		.card .table tbody tr.row-link:hover { background-color: rgba(49,130,246,0.15) !important; }
+		.card .table tbody tr.row-link:hover > td { background-color: inherit !important; }
+		/* 최종 보정: 어떤 경우에도 행 전체가 호버 시 색상 변경되도록 강제 */
+		.table tbody tr:hover { background-color: rgba(49,130,246,0.10) !important; }
 	</style>
 </head>
 <body>
